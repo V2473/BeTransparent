@@ -3,10 +3,10 @@ import { useState, useCallback } from 'react';
 import parse from 'html-react-parser';
 
 // import './index.css'
-const apiHost = process.env.API_HOST || process.env.NEXT_PUBLIC_API_HOST;
+const apiHost = process.env.API_HOST || process.env.NEXT_PUBLIC_API_HOST || '';
 const username = process.env.USERNAME || process.env.NEXT_PUBLIC_USERNAME;
 const password = process.env.PASSWORD || process.env.NEXT_PUBLIC_PASSWORD;
-const auth = 'Basic ' + btoa(username + ':' + password);
+const auth = username && password ? 'Basic ' + btoa(username + ':' + password) : '';
 
 export default function Home() {
   const [prompt, setPrompt] = useState('');
@@ -19,14 +19,19 @@ export default function Home() {
     console.log('Prompt sent');
     setResponseStatus('sent');
     try {
+      const requestParams: any = {
+        method: 'GET'
+      };
+
+      if (auth) {
+        requestParams.headers = {
+          'Authorization': auth,
+        };
+      }
+
       const response = await fetch(
-        `http://${apiHost}/api/search?query=${encodeURIComponent(prompt)}`,
-        {
-          method: 'GET',
-          headers: {
-            'Authorization': auth,
-          },
-        }
+        `${apiHost}/api/search?query=${encodeURIComponent(prompt)}`,
+        requestParams
       );
       const data = await response.text();
       // const parsedData = parse(data);
