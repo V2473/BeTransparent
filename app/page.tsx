@@ -84,8 +84,8 @@ export default function Home() {
               </linearGradient >
             </defs>
           </svg>
-          <input disabled={responseStatus === 'sent'} className='px-5 max-h-12 mx-5 border border-gray-300 rounded-md p-2 flex-grow h-20 disabled:opacity-50 bg-white max-md:mx-0' value={prompt} placeholder='Введіть промпт... ' onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => handleKeyDown(e)} />
-          <button disabled={responseStatus === 'sent'} className={getButtonColor() + " w-40  h-12 rounded-3xl text-white  cursor-pointer disabled:cursor-default max-md:text-sm mx-auto disabled:animate-pulse"} type='submit'>
+          <input disabled={responseStatus === 'sent'} className='px-5 max-h-12 mx-5 border border-gray-300 rounded-md p-2 flex-grow h-20 disabled:opacity-50 bg-white max-md:mx-3 max-md:mb-3' value={prompt} placeholder='Введіть промпт... ' onChange={(e) => setPrompt(e.target.value)} onKeyDown={(e) => handleKeyDown(e)} />
+          <button disabled={responseStatus === 'sent'} className={getButtonColor() + " w-40  h-12 rounded-3xl text-white  cursor-pointer disabled:cursor-default max-md:text-sm mx-auto disabled:animate-pulse "} type='submit'>
             {responseStatus === 'sent' ? 'Генерую...' : 'Згенерувати'}
           </button>
         </form> 
