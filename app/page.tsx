@@ -91,13 +91,13 @@ export default function Home() {
         </form> 
       </div>
       {responseMessage &&
-        <div className="flex flex-row gap-10 overflow-x-scroll h-[730px] w-full px-10 isolate">
+        <div className="flex flex-row gap-10 overflow-x-scroll h-[700px] w-full px-10 isolate">
           {responseMessage
             .replaceAll('min-h-screen', 'min-h-full')
             .replaceAll('fixed', '')
             .split('\n\n\n').map(
               (screen, index) => (
-                <div key={index} className="w-[360px] h-full shrink-0 overflow-y-scroll overflow-hidden bg-[#E2ECF4] mx-auto p-2 flex flex-col isolate rounded-3xl border border-gray-300">
+                <div key={index} className="w-[360px] h-full shrink-0  bg-[#E2ECF4] mx-auto p-2 flex flex-col isolate rounded-3xl border border-gray-300">
                   <div>{parse(screen)}</div>
                 </div>
               )
