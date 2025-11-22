@@ -71,7 +71,7 @@ export default function Home() {
       <h2 className='hidden'>Як що заходите в перший раз, перезавантажте сторінку ще раз будь ласка, підтягнуться стилі</h2>
       <div className=' z-10 bg-[linear-gradient(340deg,#e6f4d2_1%,#a7cbe3_62%)] mb-5'>
         <form className='flex flex-row flex-wrap gap-5 max-md:gap-2 p-5 max-md:px-2  bg-[linear-gradient(340deg,#e6f4d2_1%,#a7cbe3_62%)]' onSubmit={submitPrompt}>
-          <svg className='ml-5 shrink-0 max-md:mx-0 max-md:pl-2' width="50" height="50" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg className='ml-5 shrink-0 max-md:mx-0 max-md:ml-2' width="50" height="50" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
             <mask id="mask0" mask-type="alpha" maskUnits="userSpaceOnUse" x="80" y="0" width="64" height="64">
               <path d="M112 64C126.022 64 133.818 64 138.909 58.9088C144 53.8177 144 46.0271 144 32C144 17.9729 144 10.1823 138.909 5.09117C133.818 0 126.022 0 112 0C97.9775 0 90.1823 0 85.0912 5.09117C80 10.1823 80 17.9775 80 32C80 46.0225 80 53.8177 85.0912 58.9088C90.1823 64 97.9775 64 112 64Z" fill="url(#paint0_linear)" />
             </mask>
