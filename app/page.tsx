@@ -23,9 +23,6 @@ export default function Home() {
         `http://${apiHost}/api/search?query=${encodeURIComponent(prompt)}`,
         {
           method: 'GET',
-          headers: {
-            'Authorization': auth,
-          },
         }
       );
       const data = await response.text();
@@ -35,7 +32,7 @@ export default function Home() {
       console.log('Response data:', data);
     } catch (error) {
       console.error('Error:', error);
-      setResponseMessage(responseMessage);
+      setResponseMessage('Не вдалося зʼєднатися з API. Перевірте NEXT_PUBLIC_API_HOST і чи запущено Flask сервер на порті 8000.');
       setResponseStatus('error');
     }
   };
@@ -108,4 +105,3 @@ export default function Home() {
     </div>
   );
 }
-
