@@ -69,7 +69,24 @@ export default function Home() {
       e.preventDefault();
       submitPrompt(e); // Call your form submission function
     }
-  }
+  };
+
+  const downloadHtml = () => {
+    if (!responseMessage) {
+      return;
+    }
+    
+    const ts = new Date().getTime();
+    const filename = `YanaAI-${ts}.html`;
+    const blob = new Blob([responseMessage], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="">
@@ -95,7 +112,7 @@ export default function Home() {
           </button>
         </form> 
       </div>
-      {responseMessage &&
+      {responseMessage &&  <>
         <div className="flex flex-row gap-10 overflow-x-scroll h-[700px] w-full px-10 isolate">
           {responseMessage
             .replaceAll('min-h-screen', 'min-h-full')
@@ -109,8 +126,20 @@ export default function Home() {
             )
           }
         </div>
+
+        <div className="flex items-center gap-3 px-5" style={{justifyContent: "center", margin: "20px 0"}}>
+          <button
+            className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-60"
+            onClick={downloadHtml}
+            disabled={responseStatus === 'sent' || !responseMessage}
+            type="button"
+            title="Завантажити HTML"
+          >
+            <span className="text-sm">Зберегти HTML</span>
+          </button>
+        </div>
+        </>
       }
     </div>
   );
 }
-
