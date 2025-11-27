@@ -88,6 +88,14 @@ export default function Home() {
     URL.revokeObjectURL(url);
   };
 
+  const openInConstructor = () => {
+    const a = document.createElement('a');
+    a.href = 'https://yana-diia-v3.vercel.app/lego';
+    a.target = '_blank';
+    a.click();
+    a.remove();
+  };
+
   return (
     <div className="">
       <h2 className='hidden'>Як що заходите в перший раз, перезавантажте сторінку ще раз будь ласка, підтягнуться стилі</h2>
@@ -136,6 +144,16 @@ export default function Home() {
             title="Завантажити HTML"
           >
             <span className="text-sm">Зберегти HTML</span>
+          </button>
+
+          <button
+            className="flex items-center gap-2 px-3 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-60"
+            onClick={openInConstructor}
+            disabled={responseStatus === 'sent' || !responseMessage}
+            type="button"
+            title="Відкрити в кострукторі"
+          >
+            <span className="text-sm">Відкрити в кострукторі</span>
           </button>
         </div>
         </>
