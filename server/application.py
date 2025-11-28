@@ -1,30 +1,21 @@
-import os
-import sys
 import logging
 import re
+from dotenv import load_dotenv
+load_dotenv()
 
 from flask import Flask, request, jsonify
 from flask_cors import cross_origin
-
-# Make sure Python can see yana.py which is in the project root
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
-
 from yana import (
     run_yana_pipeline_with_screens,
     get_db_connection,
     semantic_search_context_for_brd,
 )
 
+from codemie_agents_poc import (prompt_query)
+
 application = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("yana_server")
-
-
-@application.route("/status")
-def status():
-    return "OK"
 
 VECTOR_LINE_RE = re.compile(
     r'^\[(?P<kind>[A-Z]+)\s+(?P<code>[^:\]]+):(?P<name>[^\]]+)\]\s+'
@@ -54,10 +45,13 @@ def parse_vector_context(raw: str):
         )
     return hits
 
+@application.route("/status")
+def status():
+    return "OK"
 
-@application.route("/api/search", methods=["GET", "POST"])
+@application.route("/api/v1/search", methods=["GET", "POST"])
 @cross_origin()
-def search():
+def v1_search():
     """
     HTTP API to run the Yana pipeline.
 
@@ -123,9 +117,14 @@ def search():
     logger.info("Returning successful response with evaluation and retrieval metadata.")
     return jsonify(response)
 
+@application.route("/api/search")
+@cross_origin()
+def search():
+    name = request.args.get('query', '112')
+    if name=='112': return "Default response for query null."
 
-
-
+    result = prompt_query(name)
+    return str(result)
 
 if __name__ == "__main__":
     # Run backend locally on port 8000
