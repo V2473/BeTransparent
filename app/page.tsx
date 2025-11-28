@@ -82,8 +82,8 @@ type VectorHit = {
 };
 
 type YanaResult = {
-  service: any;
-  ui_graph: any;
+  service: Record<string, unknown>;
+  ui_graph: Record<string, unknown>;
   screen_flows: ScreenFlow[];
   screens: Screen[];
   global_mermaid: string;
@@ -93,8 +93,8 @@ type YanaResult = {
     vector_hits: VectorHit[];
   };
   debug?: {
-    agent1_bundle: any;
-    agent2_normalized: any;
+    agent1_bundle: Record<string, unknown>;
+    agent2_normalized: Record<string, unknown>;
   };
 };
 
@@ -212,7 +212,7 @@ export default function Home() {
       });
 
       if (!response.ok) {
-        let errBody: any = null;
+        let errBody: Record<string, unknown> | null = null;
         try {
           errBody = await response.json();
         } catch {
@@ -220,7 +220,7 @@ export default function Home() {
         }
         setResponseStatus('error');
         setErrorMessage(
-          (errBody && errBody.error) ||
+          (errBody && (errBody.error as string)) ||
             `Request failed with ${response.status}`
         );
         return;
@@ -235,10 +235,10 @@ export default function Home() {
         setActiveFlowSlug(firstFlow.flow_slug);
         setActiveScreenId(firstFlow.screens[0] || null);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error(err);
       setResponseStatus('error');
-      setErrorMessage(err?.message || 'Unknown error');
+      setErrorMessage((err as Error).message || 'Unknown error');
     }
   };
 
@@ -261,7 +261,7 @@ export default function Home() {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       if (responseStatus !== 'sent') {
-        submitPrompt(e as any);
+        void submitPrompt(e as React.FormEvent);
       }
     }
   };
@@ -286,19 +286,21 @@ export default function Home() {
     null;
 
   const uiGraph = yanaResult?.ui_graph || {};
-  const graphNodes: any[] = uiGraph.nodes || [];
-  const graphComponents: any[] = uiGraph.ui_components || [];
+  const graphNodes: Record<string, unknown>[] =
+    (uiGraph.nodes as Record<string, unknown>[]) || [];
+  const graphComponents: Record<string, unknown>[] =
+    (uiGraph.ui_components as Record<string, unknown>[]) || [];
 
-  const nodesByStepSlug = new Map<string, any>();
-  graphNodes.forEach((n: any) => {
+  const nodesByStepSlug = new Map<string, Record<string, unknown>>();
+  graphNodes.forEach((n: Record<string, unknown>) => {
     if (n.step_slug) {
-      nodesByStepSlug.set(n.step_slug, n);
+      nodesByStepSlug.set(n.step_slug as string, n);
     }
   });
 
-  const dsByKey = new Map<string, any>();
-  graphComponents.forEach((c: any) => {
-    const key = c.slug || c.key;
+  const dsByKey = new Map<string, Record<string, unknown>>();
+  graphComponents.forEach((c: Record<string, unknown>) => {
+    const key = (c.slug || c.key) as string;
     if (key) {
       dsByKey.set(key, c);
     }
@@ -311,10 +313,12 @@ export default function Home() {
     );
   });
 
-  const evalByFlowId = new Map<string, any>();
-  (yanaResult as any)?.evaluation?.workflows?.forEach((w: any) => {
+  const evalByFlowId = new Map<string, Record<string, unknown>>();
+  (
+    yanaResult?.evaluation?.workflows as Record<string, unknown>[]
+  )?.forEach((w: Record<string, unknown>) => {
     if (w.workflow_id) {
-      evalByFlowId.set(w.workflow_id, w);
+      evalByFlowId.set(w.workflow_id as string, w);
     }
   });
 
@@ -339,6 +343,14 @@ export default function Home() {
               to send.
             </p>
           </div>
+          <a
+            href="https://yana-diia-v3.vercel.app/lego?service=kotyk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-slate-800"
+          >
+            Конструктор Lego
+          </a>
           <div className="hidden md:flex flex-col items-end text-xs text-slate-700">
             <span className="font-mono">
               API_HOST: {apiHost || '<same origin>'}
@@ -511,7 +523,10 @@ export default function Home() {
                       {(activeScreen.step_slugs || []).map((slug) => {
                         const node = nodesByStepSlug.get(slug);
                         if (!node) return null;
-                        const comps = (node.components || []) as any[];
+                        const comps = (node.components || []) as Record<
+                          string,
+                          unknown
+                        >[];
                         return (
                           <div
                             key={slug}
@@ -521,11 +536,11 @@ export default function Home() {
                               {slug}
                             </div>
                             <div className="text-xs font-semibold text-slate-900">
-                              {node.title || node.step_slug}
+                              {(node.title as string) || (node.step_slug as string)}
                             </div>
-                            {node.description && (
+                            {(node.description as string) && (
                               <p className="text-[11px] text-slate-600 mt-1 whitespace-pre-wrap">
-                                {node.description}
+                                {node.description as string}
                               </p>
                             )}
                             {comps.length > 0 && (
@@ -540,14 +555,15 @@ export default function Home() {
                                       className="flex items-center justify-between text-[11px]"
                                     >
                                       <span className="font-mono text-slate-700">
-                                        {c.key}
+                                        {c.key as string}
                                       </span>
                                       <span className="ml-2 text-slate-600 flex-1 truncate">
-                                        {c.name || c.description}
+                                        {(c.name as string) ||
+                                          (c.description as string)}
                                       </span>
-                                      {c.role && (
+                                      {(c.role as string) && (
                                         <span className="ml-2 px-1.5 py-0.5 rounded-full text-[9px] bg-slate-200 text-slate-700">
-                                          {c.role}
+                                          {c.role as string}
                                         </span>
                                       )}
                                     </li>
@@ -588,17 +604,19 @@ export default function Home() {
                               {slug}
                             </div>
                             <div className="text-xs font-semibold text-slate-900">
-                              {comp?.name || comp?.type || 'Unknown component'}
+                              {(comp?.name as string) ||
+                                (comp?.type as string) ||
+                                'Unknown component'}
                             </div>
-                            {comp?.description && (
+                            {comp && (comp.description as string) && (
                               <p className="text-[11px] text-slate-600 mt-1">
-                                {comp.description}
+                                {comp.description as string}
                               </p>
                             )}
-                            {comp?.usage_notes && (
+                            {comp && (comp.usage_notes as string) && (
                               <p className="text-[10px] text-slate-500 mt-1">
                                 <span className="font-semibold">Usage:</span>{' '}
-                                {comp.usage_notes}
+                                {comp.usage_notes as string}
                               </p>
                             )}
                           </div>
@@ -630,7 +648,7 @@ export default function Home() {
                         const evalRow =
                           evalByFlowId.get(flowSlug) ||
                           (yanaResult.evaluation!.workflows || []).find(
-                            (w: any) =>
+                            (w: Record<string, unknown>) =>
                               w.workflow_id === flowSlug ||
                               w.workflow_title === activeFlow?.name
                           );
@@ -649,7 +667,7 @@ export default function Home() {
                           <div className="space-y-2 text-[11px]">
                             <div className="flex items-center justify-between">
                               <div className="font-semibold">
-                                {activeFlow?.name || evalRow.workflow_title}
+                                {activeFlow?.name || (evalRow.workflow_title as string)}
                               </div>
                               {isRecommended && (
                                 <span className="ml-2 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px]">
@@ -704,34 +722,36 @@ export default function Home() {
                                 </div>
                               )}
                             </div>
-                            {evalRow.pros && evalRow.pros.length > 0 && (
-                              <div>
-                                <div className="text-slate-500 mb-0.5">
-                                  Pros
+                            {Array.isArray(evalRow.pros) &&
+                              evalRow.pros.length > 0 && (
+                                <div>
+                                  <div className="text-slate-500 mb-0.5">
+                                    Pros
+                                  </div>
+                                  <ul className="list-disc pl-4">
+                                    {evalRow.pros.map(
+                                      (p: string, i: number) => (
+                                        <li key={i}>{p}</li>
+                                      )
+                                    )}
+                                  </ul>
                                 </div>
-                                <ul className="list-disc pl-4">
-                                  {evalRow.pros.map(
-                                    (p: string, i: number) => (
-                                      <li key={i}>{p}</li>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                            )}
-                            {evalRow.cons && evalRow.cons.length > 0 && (
-                              <div>
-                                <div className="text-slate-500 mb-0.5">
-                                  Cons
+                              )}
+                            {Array.isArray(evalRow.cons) &&
+                              evalRow.cons.length > 0 && (
+                                <div>
+                                  <div className="text-slate-500 mb-0.5">
+                                    Cons
+                                  </div>
+                                  <ul className="list-disc pl-4">
+                                    {evalRow.cons.map(
+                                      (c: string, i: number) => (
+                                        <li key={i}>{c}</li>
+                                      )
+                                    )}
+                                  </ul>
                                 </div>
-                                <ul className="list-disc pl-4">
-                                  {evalRow.cons.map(
-                                    (c: string, i: number) => (
-                                      <li key={i}>{c}</li>
-                                    )
-                                  )}
-                                </ul>
-                              </div>
-                            )}
+                              )}
                           </div>
                         );
                       })()}
