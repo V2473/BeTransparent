@@ -329,7 +329,7 @@ export default function Home() {
         <div className="mx-auto max-w-6xl px-4 py-5 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-2xl md:text-3xl font-semibold">
-              «Яна» – workflow → screens explorer
+              YanaAI - workflow generator
             </h1>
             <p className="mt-1 text-sm text-slate-700 max-w-xl">
               Вставте BRD, запустіть pipeline і подивіться на згенеровані
