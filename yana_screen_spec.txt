@@ -1,0 +1,1148 @@
+{
+  "service": {
+    "slug": "car_rental",
+    "name": "Оренда авто",
+    "summary": "Дозволяє користувачам орендувати автомобіль через додаток Дія, з використанням цифрових документів та електронної ідентифікації.",
+    "tags": [
+      "оренда",
+      "авто",
+      "транспорт",
+      "послуги",
+      "Дія"
+    ]
+  },
+  "ui_graph": {
+    "service": {
+      "slug": "car_rental",
+      "name": "Оренда авто",
+      "summary": "Дозволяє користувачам орендувати автомобіль через додаток Дія, з використанням цифрових документів та електронної ідентифікації.",
+      "tags": [
+        "оренда",
+        "авто",
+        "транспорт",
+        "послуги",
+        "Дія"
+      ]
+    },
+    "flows": [
+      {
+        "slug": "rental_via_services_tab",
+        "name": "Оренда авто через вкладку «Сервіси»",
+        "goal": "Надати користувачу можливість знайти та орендувати авто через вкладку «Сервіси» у каталозі послуг.",
+        "primary_actor": "Громадянин з профілем у Дія",
+        "entry_point": "Вкладка «Сервіси» (нижня навігація) > Сітка сервісів > Картка «Оренда авто»",
+        "notes": "Вхід через стандартний сервісний каталог Дія. Користувач має бути авторизований. Відображення картки «Оренда авто» залежить від доступності сервісу для сегменту користувача.",
+        "derived_from_flow_slug": "rental_via_services_catalog",
+        "mapping_to_reference_flows": [
+          "ww_discovery_diia_card"
+        ],
+        "normalization_notes": "Вхід через вкладку «Сервіси» та сітку сервісів, як у флоу «Тепла зима». Переіменовано для відповідності Diia discovery pattern."
+      },
+      {
+        "slug": "rental_via_services_map",
+        "name": "Оренда авто через мапу сервісів",
+        "goal": "Дозволити користувачу знайти доступні авто на інтерактивній мапі сервісів та оформити оренду.",
+        "primary_actor": "Громадянин з профілем у Дія",
+        "entry_point": "Вкладка «Сервіси» > Мапа сервісів > Фільтр «Оренда авто»",
+        "notes": "Мапа сервісів — додатковий discovery-патерн у Дія. Вхід можливий лише з вкладки «Сервіси».",
+        "derived_from_flow_slug": "rental_via_map_search",
+        "mapping_to_reference_flows": [
+          "ww_discovery_diia_card"
+        ],
+        "normalization_notes": "Вхід через мапу сервісів у вкладці «Сервіси», відповідно до патернів Diia. Відкориговано entry point."
+      },
+      {
+        "slug": "rental_via_services_partner_banner",
+        "name": "Оренда авто через партнерський банер у «Сервіси»",
+        "goal": "Дозволити користувачу скористатися спеціальною партнерською пропозицією через банер у вкладці «Сервіси».",
+        "primary_actor": "Громадянин з профілем у Дія",
+        "entry_point": "Вкладка «Сервіси» > Промо-банер партнерської пропозиції",
+        "notes": "Банер розміщується у верхній частині вкладки «Сервіси», як для інших промо-кампаній. Вхід можливий лише для сегменту користувачів, для яких активна партнерська пропозиція.",
+        "derived_from_flow_slug": "rental_via_partner_offer",
+        "mapping_to_reference_flows": [
+          "ww_discovery_diia_card"
+        ],
+        "normalization_notes": "Партнерські банери розміщуються у вкладці «Сервіси», а не на головній. Відкориговано entry point."
+      }
+    ],
+    "ui_components": [
+      {
+        "slug": "services_tab_grid",
+        "name": "Сітка сервісів на вкладці «Сервіси»",
+        "description": "Двоколонкова сітка карток-плиток з державними та соціальними послугами.",
+        "key": "services_tab_grid"
+      },
+      {
+        "slug": "map_view",
+        "name": "Мапа сервісів",
+        "description": "Інтерактивна мапа з фільтрами та маркерами.",
+        "key": "map_view"
+      },
+      {
+        "slug": "promo_banner",
+        "name": "Промо-банер у «Сервіси»",
+        "description": "Банер у верхній частині вкладки «Сервіси» для спеціальних пропозицій.",
+        "key": "promo_banner"
+      },
+      {
+        "slug": "car_list",
+        "name": "Список авто",
+        "description": "Перелік доступних авто з фільтрами.",
+        "key": "car_list"
+      },
+      {
+        "slug": "car_card",
+        "name": "Картка авто",
+        "description": "Детальна інформація про авто, фото, ціна, умови.",
+        "key": "car_card"
+      },
+      {
+        "slug": "identity_verification",
+        "name": "Підтвердження особи",
+        "description": "Модуль перевірки цифрових документів користувача.",
+        "key": "identity_verification"
+      },
+      {
+        "slug": "agreement_viewer",
+        "name": "Перегляд та підписання договору",
+        "description": "Перегляд PDF договору, підписання через Дія.Підпис.",
+        "key": "agreement_viewer"
+      },
+      {
+        "slug": "success_screen",
+        "name": "Екран успіху",
+        "description": "Підтвердження успішної оренди, інструкції, кнопка 'Повернутись на головну'.",
+        "key": "success_screen"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "A0",
+        "step_slug": "S0_services_tab_entry",
+        "title": "Вхід через вкладку «Сервіси»",
+        "flows": [],
+        "description": "Користувач відкриває вкладку «Сервіси» у нижній навігації та бачить сітку сервісів.\n\nКомпоненти екрану:\n- Сітка сервісів на вкладці «Сервіси»: Двоколонкова сітка карток-плиток з державними та соціальними послугами.\n\nНотатки з нормалізації: Переіменовано для відповідності патерну Diia: вхід через вкладку «Сервіси».",
+        "components": [
+          {
+            "key": "services_tab_grid",
+            "name": "Сітка сервісів на вкладці «Сервіси»",
+            "description": "Двоколонкова сітка карток-плиток з державними та соціальними послугами.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "B0",
+        "step_slug": "S1_services_map_entry",
+        "title": "Вхід через мапу сервісів",
+        "flows": [],
+        "description": "Користувач переходить у розділ мапи сервісів у вкладці «Сервіси» та обирає фільтр «Оренда авто».\n\nКомпоненти екрану:\n- Мапа сервісів: Інтерактивна мапа з фільтрами та маркерами.\n\nНотатки з нормалізації: Мапа сервісів доступна лише через вкладку «Сервіси».",
+        "components": [
+          {
+            "key": "map_view",
+            "name": "Мапа сервісів",
+            "description": "Інтерактивна мапа з фільтрами та маркерами.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "C0",
+        "step_slug": "S2_partner_banner_entry",
+        "title": "Вхід через партнерський банер у «Сервіси»",
+        "flows": [],
+        "description": "Користувач натискає на банер партнерської пропозиції у вкладці «Сервіси».\n\nКомпоненти екрану:\n- Промо-банер у «Сервіси»: Банер у верхній частині вкладки «Сервіси» для спеціальних пропозицій.\n\nНотатки з нормалізації: Банер розміщується у вкладці «Сервіси», а не на головній.",
+        "components": [
+          {
+            "key": "promo_banner",
+            "name": "Промо-банер у «Сервіси»",
+            "description": "Банер у верхній частині вкладки «Сервіси» для спеціальних пропозицій.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "A1",
+        "step_slug": "S3_select_car",
+        "title": "Вибір авто",
+        "flows": [],
+        "description": "Користувач переглядає доступні авто, фільтрує за параметрами, обирає потрібне авто.\n\nКомпоненти екрану:\n- Список авто: Перелік доступних авто з фільтрами.",
+        "components": [
+          {
+            "key": "car_list",
+            "name": "Список авто",
+            "description": "Перелік доступних авто з фільтрами.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "B1",
+        "step_slug": "S4_view_car_on_map",
+        "title": "Перегляд авто на мапі",
+        "flows": [],
+        "description": "Користувач бачить доступні авто на мапі, натискає на маркер для деталей.\n\nКомпоненти екрану:\n- Мапа сервісів: Інтерактивна мапа з фільтрами та маркерами.",
+        "components": [
+          {
+            "key": "map_view",
+            "name": "Мапа сервісів",
+            "description": "Інтерактивна мапа з фільтрами та маркерами.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "C1",
+        "step_slug": "S5_quick_select_car",
+        "title": "Швидкий вибір авто (партнер)",
+        "flows": [],
+        "description": "Користувач бачить перелік авто за спеціальною ціною або умовами, обирає авто.\n\nКомпоненти екрану:\n- Список авто: Перелік доступних авто з фільтрами.",
+        "components": [
+          {
+            "key": "car_list",
+            "name": "Список авто",
+            "description": "Перелік доступних авто з фільтрами.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "A2",
+        "step_slug": "S6_view_details",
+        "title": "Перегляд деталей авто",
+        "flows": [],
+        "description": "Користувач переглядає деталі авто, умови оренди, фото, ціну.\n\nКомпоненти екрану:\n- Картка авто: Детальна інформація про авто, фото, ціна, умови.",
+        "components": [
+          {
+            "key": "car_card",
+            "name": "Картка авто",
+            "description": "Детальна інформація про авто, фото, ціна, умови.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "B2",
+        "step_slug": "S7_view_details_map",
+        "title": "Деталі авто з мапи",
+        "flows": [],
+        "description": "Користувач переглядає деталі вибраного авто з мапи.\n\nКомпоненти екрану:\n- Картка авто: Детальна інформація про авто, фото, ціна, умови.",
+        "components": [
+          {
+            "key": "car_card",
+            "name": "Картка авто",
+            "description": "Детальна інформація про авто, фото, ціна, умови.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "C2",
+        "step_slug": "S8_view_details_partner",
+        "title": "Деталі авто з партнерської пропозиції",
+        "flows": [],
+        "description": "Користувач переглядає деталі авто та умови партнерської пропозиції.\n\nКомпоненти екрану:\n- Картка авто: Детальна інформація про авто, фото, ціна, умови.",
+        "components": [
+          {
+            "key": "car_card",
+            "name": "Картка авто",
+            "description": "Детальна інформація про авто, фото, ціна, умови.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "A3",
+        "step_slug": "S9_confirm_identity",
+        "title": "Підтвердження особи",
+        "flows": [],
+        "description": "Користувач підтверджує особу через цифрові документи у Дія.\n\nКомпоненти екрану:\n- Підтвердження особи: Модуль перевірки цифрових документів користувача.",
+        "components": [
+          {
+            "key": "identity_verification",
+            "name": "Підтвердження особи",
+            "description": "Модуль перевірки цифрових документів користувача.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "B3",
+        "step_slug": "S10_confirm_identity_map",
+        "title": "Підтвердження особи (мапа)",
+        "flows": [],
+        "description": "Підтвердження особи через цифрові документи у Дія (для мапи).\n\nКомпоненти екрану:\n- Підтвердження особи: Модуль перевірки цифрових документів користувача.",
+        "components": [
+          {
+            "key": "identity_verification",
+            "name": "Підтвердження особи",
+            "description": "Модуль перевірки цифрових документів користувача.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "C3",
+        "step_slug": "S11_confirm_identity_partner",
+        "title": "Підтвердження особи (партнер)",
+        "flows": [],
+        "description": "Підтвердження особи через цифрові документи у Дія (для партнерської пропозиції).\n\nКомпоненти екрану:\n- Підтвердження особи: Модуль перевірки цифрових документів користувача.",
+        "components": [
+          {
+            "key": "identity_verification",
+            "name": "Підтвердження особи",
+            "description": "Модуль перевірки цифрових документів користувача.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "A4",
+        "step_slug": "S12_sign_agreement",
+        "title": "Підписання договору",
+        "flows": [],
+        "description": "Користувач переглядає договір оренди та підписує його через Дія.Підпис.\n\nКомпоненти екрану:\n- Перегляд та підписання договору: Перегляд PDF договору, підписання через Дія.Підпис.",
+        "components": [
+          {
+            "key": "agreement_viewer",
+            "name": "Перегляд та підписання договору",
+            "description": "Перегляд PDF договору, підписання через Дія.Підпис.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "B4",
+        "step_slug": "S13_sign_agreement_map",
+        "title": "Підписання договору (мапа)",
+        "flows": [],
+        "description": "Підписання договору оренди через Дія.Підпис (для мапи).\n\nКомпоненти екрану:\n- Перегляд та підписання договору: Перегляд PDF договору, підписання через Дія.Підпис.",
+        "components": [
+          {
+            "key": "agreement_viewer",
+            "name": "Перегляд та підписання договору",
+            "description": "Перегляд PDF договору, підписання через Дія.Підпис.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "C4",
+        "step_slug": "S14_sign_agreement_partner",
+        "title": "Підписання договору (партнер)",
+        "flows": [],
+        "description": "Підписання договору оренди через Дія.Підпис (для партнерської пропозиції).\n\nКомпоненти екрану:\n- Перегляд та підписання договору: Перегляд PDF договору, підписання через Дія.Підпис.",
+        "components": [
+          {
+            "key": "agreement_viewer",
+            "name": "Перегляд та підписання договору",
+            "description": "Перегляд PDF договору, підписання через Дія.Підпис.",
+            "role": "primary"
+          }
+        ]
+      },
+      {
+        "id": "A5",
+        "step_slug": "S15_success",
+        "title": "Успішна оренда",
+        "flows": [],
+        "description": "Користувач отримує підтвердження, інструкції щодо отримання авто та електронний договір.\n\nКомпоненти екрану:\n- Екран успіху: Підтвердження успішної оренди, інструкції, кнопка 'Повернутись на головну'.",
+        "components": [
+          {
+            "key": "success_screen",
+            "name": "Екран успіху",
+            "description": "Підтвердження успішної оренди, інструкції, кнопка 'Повернутись на головну'.",
+            "role": "primary"
+          }
+        ]
+      }
+    ],
+    "edges": [
+      {
+        "from": "A0",
+        "to": "A1",
+        "from_step_slug": "S0_services_tab_entry",
+        "to_step_slug": "S3_select_car",
+        "trigger": "Користувач обирає картку «Оренда авто» у сітці сервісів",
+        "condition": "Картка доступна для сегменту користувача"
+      },
+      {
+        "from": "A1",
+        "to": "A2",
+        "from_step_slug": "S3_select_car",
+        "to_step_slug": "S6_view_details",
+        "trigger": "Користувач натискає на авто",
+        "condition": ""
+      },
+      {
+        "from": "A2",
+        "to": "A3",
+        "from_step_slug": "S6_view_details",
+        "to_step_slug": "S9_confirm_identity",
+        "trigger": "Користувач натискає 'Орендувати'",
+        "condition": ""
+      },
+      {
+        "from": "A3",
+        "to": "A4",
+        "from_step_slug": "S9_confirm_identity",
+        "to_step_slug": "S12_sign_agreement",
+        "trigger": "Ідентифікація пройдена",
+        "condition": ""
+      },
+      {
+        "from": "A4",
+        "to": "A5",
+        "from_step_slug": "S12_sign_agreement",
+        "to_step_slug": "S15_success",
+        "trigger": "Договір підписано",
+        "condition": ""
+      },
+      {
+        "from": "B0",
+        "to": "B1",
+        "from_step_slug": "S1_services_map_entry",
+        "to_step_slug": "S4_view_car_on_map",
+        "trigger": "Користувач обирає фільтр 'Оренда авто'",
+        "condition": ""
+      },
+      {
+        "from": "B1",
+        "to": "B2",
+        "from_step_slug": "S4_view_car_on_map",
+        "to_step_slug": "S7_view_details_map",
+        "trigger": "Користувач натискає на маркер авто",
+        "condition": ""
+      },
+      {
+        "from": "B2",
+        "to": "B3",
+        "from_step_slug": "S7_view_details_map",
+        "to_step_slug": "S10_confirm_identity_map",
+        "trigger": "Користувач натискає 'Орендувати'",
+        "condition": ""
+      },
+      {
+        "from": "B3",
+        "to": "B4",
+        "from_step_slug": "S10_confirm_identity_map",
+        "to_step_slug": "S13_sign_agreement_map",
+        "trigger": "Ідентифікація пройдена",
+        "condition": ""
+      },
+      {
+        "from": "B4",
+        "to": "A5",
+        "from_step_slug": "S13_sign_agreement_map",
+        "to_step_slug": "S15_success",
+        "trigger": "Договір підписано",
+        "condition": ""
+      },
+      {
+        "from": "C0",
+        "to": "C1",
+        "from_step_slug": "S2_partner_banner_entry",
+        "to_step_slug": "S5_quick_select_car",
+        "trigger": "Користувач натискає банер",
+        "condition": "Банер доступний для сегменту користувача"
+      },
+      {
+        "from": "C1",
+        "to": "C2",
+        "from_step_slug": "S5_quick_select_car",
+        "to_step_slug": "S8_view_details_partner",
+        "trigger": "Користувач обирає авто",
+        "condition": ""
+      },
+      {
+        "from": "C2",
+        "to": "C3",
+        "from_step_slug": "S8_view_details_partner",
+        "to_step_slug": "S11_confirm_identity_partner",
+        "trigger": "Користувач натискає 'Орендувати'",
+        "condition": ""
+      },
+      {
+        "from": "C3",
+        "to": "C4",
+        "from_step_slug": "S11_confirm_identity_partner",
+        "to_step_slug": "S14_sign_agreement_partner",
+        "trigger": "Ідентифікація пройдена",
+        "condition": ""
+      },
+      {
+        "from": "C4",
+        "to": "A5",
+        "from_step_slug": "S14_sign_agreement_partner",
+        "to_step_slug": "S15_success",
+        "trigger": "Договір підписано",
+        "condition": ""
+      }
+    ],
+    "mermaid": "flowchart TD\n  subgraph Вкладка «Сервіси»\n    A0[Вхід через вкладку «Сервіси»]\n    A1[Вибір авто]\n    A2[Перегляд деталей авто]\n    A3[Підтвердження особи]\n    A4[Підписання договору]\n    A5[Успішна оренда]\n  end\n  A0 --> A1\n  A1 --> A2\n  A2 --> A3\n  A3 --> A4\n  A4 --> A5\n  subgraph Мапа сервісів\n    B0[Вхід через мапу сервісів]\n    B1[Перегляд авто на мапі]\n    B2[Деталі авто з мапи]\n    B3[Підтвердження особи (мапа)]\n    B4[Підписання договору (мапа)]\n    A5[Успішна оренда]\n  end\n  B0 --> B1\n  B1 --> B2\n  B2 --> B3\n  B3 --> B4\n  B4 --> A5\n  subgraph Партнерський банер у «Сервіси»\n    C0[Вхід через партнерський банер у «Сервіси»]\n    C1[Швидкий вибір авто (партнер)]\n    C2[Деталі авто з партнерської пропозиції]\n    C3[Підтвердження особи (партнер)]\n    C4[Підписання договору (партнер)]\n    A5[Успішна оренда]\n  end\n  C0 --> C1\n  C1 --> C2\n  C2 --> C3\n  C3 --> C4\n  C4 --> A5"
+  },
+  "screen_flows": [
+    {
+      "flow_slug": "rental_via_services_tab",
+      "name": "Оренда авто через вкладку «Сервіси»",
+      "description": "Користувач знаходить сервіс «Оренда авто» у каталозі, обирає авто, підтверджує особу, підписує договір та отримує підтвердження.",
+      "screens": [
+        "screen_services_grid",
+        "screen_car_catalog",
+        "screen_car_details",
+        "screen_identity_verification",
+        "screen_agreement_sign",
+        "screen_rental_success"
+      ]
+    },
+    {
+      "flow_slug": "rental_via_services_map",
+      "name": "Оренда авто через мапу сервісів",
+      "description": "Користувач знаходить авто на мапі, переглядає деталі, підтверджує особу, підписує договір та отримує підтвердження.",
+      "screens": [
+        "screen_services_map",
+        "screen_map_cars",
+        "screen_car_details_map",
+        "screen_identity_verification_map",
+        "screen_agreement_sign_map",
+        "screen_rental_success"
+      ]
+    },
+    {
+      "flow_slug": "rental_via_services_partner_banner",
+      "name": "Оренда авто через партнерський банер у «Сервіси»",
+      "description": "Користувач переходить за партнерським банером, обирає авто за спеціальними умовами, підтверджує особу, підписує договір та отримує підтвердження.",
+      "screens": [
+        "screen_partner_banner",
+        "screen_partner_car_catalog",
+        "screen_partner_car_details",
+        "screen_identity_verification_partner",
+        "screen_agreement_sign_partner",
+        "screen_rental_success"
+      ]
+    }
+  ],
+  "screens": [
+    {
+      "screen_id": "screen_services_grid",
+      "step_slugs": [
+        "S0_services_tab_entry"
+      ],
+      "mermaid_node_ids": [
+        "A0"
+      ],
+      "screen_type": "list",
+      "title": "Сервіси",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає всі доступні сервіси у вигляді сітки. Може обрати сервіс «Оренда авто» для початку оформлення.",
+      "sections": [
+        {
+          "type": "list",
+          "title": "Державні та соціальні послуги",
+          "description": "Сітка сервісів для вибору.",
+          "components": [
+            {
+              "component_slug": "services_tab_grid",
+              "label": "Оренда авто",
+              "placeholder": "",
+              "role": "primary",
+              "repeats": "для кожного сервісу у каталозі",
+              "actions": [
+                {
+                  "label": "Обрати",
+                  "navigates_to_screen_id": "screen_car_catalog",
+                  "navigates_to_step_slug": "S3_select_car"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Оренда авто",
+        "navigates_to_screen_id": "screen_car_catalog",
+        "navigates_to_step_slug": "S3_select_car"
+      }
+    },
+    {
+      "screen_id": "screen_car_catalog",
+      "step_slugs": [
+        "S3_select_car"
+      ],
+      "mermaid_node_ids": [
+        "A1"
+      ],
+      "screen_type": "list",
+      "title": "Оберіть авто",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає перелік доступних авто, може скористатися фільтрами та обрати потрібне авто для оренди.",
+      "sections": [
+        {
+          "type": "filters",
+          "title": "Фільтри",
+          "description": "Відфільтруйте авто за параметрами.",
+          "components": [
+            {
+              "component_slug": "filter_chips",
+              "label": "Тип авто",
+              "placeholder": "Всі типи",
+              "role": "secondary"
+            },
+            {
+              "component_slug": "filter_chips",
+              "label": "Ціна",
+              "placeholder": "Будь-яка",
+              "role": "secondary"
+            }
+          ]
+        },
+        {
+          "type": "list",
+          "title": "Доступні авто",
+          "description": "Список авто для оренди.",
+          "components": [
+            {
+              "component_slug": "car_list",
+              "label": "Авто",
+              "placeholder": "Оберіть авто зі списку",
+              "role": "primary",
+              "repeats": "для кожного авто у списку",
+              "actions": [
+                {
+                  "label": "Детальніше",
+                  "navigates_to_screen_id": "screen_car_details",
+                  "navigates_to_step_slug": "S6_view_details"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "",
+        "navigates_to_screen_id": "",
+        "navigates_to_step_slug": ""
+      }
+    },
+    {
+      "screen_id": "screen_car_details",
+      "step_slugs": [
+        "S6_view_details"
+      ],
+      "mermaid_node_ids": [
+        "A2"
+      ],
+      "screen_type": "details",
+      "title": "Деталі авто",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає фото, характеристики, умови оренди та ціну обраного авто. Може перейти до оформлення оренди.",
+      "sections": [
+        {
+          "type": "details",
+          "title": "Інформація про авто",
+          "description": "Детальна інформація, фото, ціна, умови.",
+          "components": [
+            {
+              "component_slug": "car_card",
+              "label": "Деталі авто",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Орендувати",
+        "navigates_to_screen_id": "screen_identity_verification",
+        "navigates_to_step_slug": "S9_confirm_identity"
+      }
+    },
+    {
+      "screen_id": "screen_identity_verification",
+      "step_slugs": [
+        "S9_confirm_identity"
+      ],
+      "mermaid_node_ids": [
+        "A3"
+      ],
+      "screen_type": "form",
+      "title": "Підтвердження особи",
+      "subtitle": "",
+      "functional_description": "Користувач підтверджує свою особу через цифрові документи у Дія для продовження оформлення оренди.",
+      "sections": [
+        {
+          "type": "form",
+          "title": "",
+          "description": "Підтвердіть особу для оформлення оренди.",
+          "components": [
+            {
+              "component_slug": "identity_verification",
+              "label": "Підтвердити через Дія",
+              "placeholder": "",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Підтвердити",
+                  "navigates_to_screen_id": "screen_agreement_sign",
+                  "navigates_to_step_slug": "S12_sign_agreement"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підтвердити",
+        "navigates_to_screen_id": "screen_agreement_sign",
+        "navigates_to_step_slug": "S12_sign_agreement"
+      }
+    },
+    {
+      "screen_id": "screen_agreement_sign",
+      "step_slugs": [
+        "S12_sign_agreement"
+      ],
+      "mermaid_node_ids": [
+        "A4"
+      ],
+      "screen_type": "form",
+      "title": "Підписання договору",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає договір оренди та підписує його через Дія.Підпис.",
+      "sections": [
+        {
+          "type": "summary",
+          "title": "Договір оренди",
+          "description": "Ознайомтесь з умовами та підпишіть договір.",
+          "components": [
+            {
+              "component_slug": "agreement_viewer",
+              "label": "Переглянути договір",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підписати",
+        "navigates_to_screen_id": "screen_rental_success",
+        "navigates_to_step_slug": "S15_success"
+      }
+    },
+    {
+      "screen_id": "screen_rental_success",
+      "step_slugs": [
+        "S15_success"
+      ],
+      "mermaid_node_ids": [
+        "A5"
+      ],
+      "screen_type": "confirmation",
+      "title": "Оренду оформлено!",
+      "subtitle": "",
+      "functional_description": "Користувач отримує підтвердження успішної оренди, інструкції щодо отримання авто та електронний договір.",
+      "sections": [
+        {
+          "type": "summary",
+          "title": "",
+          "description": "Ваша оренда підтверджена. Деталі та інструкції нижче.",
+          "components": [
+            {
+              "component_slug": "success_screen",
+              "label": "Оренду оформлено успішно",
+              "placeholder": "",
+              "role": "informational",
+              "actions": [
+                {
+                  "label": "Повернутись на головну",
+                  "navigates_to_screen_id": "",
+                  "navigates_to_step_slug": ""
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Повернутись на головну",
+        "navigates_to_screen_id": "",
+        "navigates_to_step_slug": ""
+      }
+    },
+    {
+      "screen_id": "screen_services_map",
+      "step_slugs": [
+        "S1_services_map_entry"
+      ],
+      "mermaid_node_ids": [
+        "B0"
+      ],
+      "screen_type": "list",
+      "title": "Мапа сервісів",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає мапу сервісів та обирає фільтр «Оренда авто» для пошуку доступних авто поруч.",
+      "sections": [
+        {
+          "type": "search",
+          "title": "Мапа",
+          "description": "Знайдіть авто на мапі.",
+          "components": [
+            {
+              "component_slug": "map_view",
+              "label": "Оренда авто на мапі",
+              "placeholder": "Виберіть фільтр",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Показати авто",
+                  "navigates_to_screen_id": "screen_map_cars",
+                  "navigates_to_step_slug": "S4_view_car_on_map"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Показати авто",
+        "navigates_to_screen_id": "screen_map_cars",
+        "navigates_to_step_slug": "S4_view_car_on_map"
+      }
+    },
+    {
+      "screen_id": "screen_map_cars",
+      "step_slugs": [
+        "S4_view_car_on_map"
+      ],
+      "mermaid_node_ids": [
+        "B1"
+      ],
+      "screen_type": "list",
+      "title": "Доступні авто на мапі",
+      "subtitle": "",
+      "functional_description": "Користувач бачить авто на мапі, може натиснути на маркер для перегляду деталей.",
+      "sections": [
+        {
+          "type": "list",
+          "title": "Авто поруч",
+          "description": "Натисніть на маркер для деталей.",
+          "components": [
+            {
+              "component_slug": "map_view",
+              "label": "Мапа з авто",
+              "placeholder": "",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Детальніше",
+                  "navigates_to_screen_id": "screen_car_details_map",
+                  "navigates_to_step_slug": "S7_view_details_map"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "",
+        "navigates_to_screen_id": "",
+        "navigates_to_step_slug": ""
+      }
+    },
+    {
+      "screen_id": "screen_car_details_map",
+      "step_slugs": [
+        "S7_view_details_map"
+      ],
+      "mermaid_node_ids": [
+        "B2"
+      ],
+      "screen_type": "details",
+      "title": "Деталі авто",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає деталі вибраного авто з мапи, може перейти до оформлення оренди.",
+      "sections": [
+        {
+          "type": "details",
+          "title": "Інформація про авто",
+          "description": "Детальна інформація, фото, ціна, умови.",
+          "components": [
+            {
+              "component_slug": "car_card",
+              "label": "Деталі авто",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Орендувати",
+        "navigates_to_screen_id": "screen_identity_verification_map",
+        "navigates_to_step_slug": "S10_confirm_identity_map"
+      }
+    },
+    {
+      "screen_id": "screen_identity_verification_map",
+      "step_slugs": [
+        "S10_confirm_identity_map"
+      ],
+      "mermaid_node_ids": [
+        "B3"
+      ],
+      "screen_type": "form",
+      "title": "Підтвердження особи",
+      "subtitle": "",
+      "functional_description": "Користувач підтверджує особу через цифрові документи у Дія для продовження оформлення оренди.",
+      "sections": [
+        {
+          "type": "form",
+          "title": "",
+          "description": "Підтвердіть особу для оформлення оренди.",
+          "components": [
+            {
+              "component_slug": "identity_verification",
+              "label": "Підтвердити через Дія",
+              "placeholder": "",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Підтвердити",
+                  "navigates_to_screen_id": "screen_agreement_sign_map",
+                  "navigates_to_step_slug": "S13_sign_agreement_map"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підтвердити",
+        "navigates_to_screen_id": "screen_agreement_sign_map",
+        "navigates_to_step_slug": "S13_sign_agreement_map"
+      }
+    },
+    {
+      "screen_id": "screen_agreement_sign_map",
+      "step_slugs": [
+        "S13_sign_agreement_map"
+      ],
+      "mermaid_node_ids": [
+        "B4"
+      ],
+      "screen_type": "form",
+      "title": "Підписання договору",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає договір оренди та підписує його через Дія.Підпис.",
+      "sections": [
+        {
+          "type": "summary",
+          "title": "Договір оренди",
+          "description": "Ознайомтесь з умовами та підпишіть договір.",
+          "components": [
+            {
+              "component_slug": "agreement_viewer",
+              "label": "Переглянути договір",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підписати",
+        "navigates_to_screen_id": "screen_rental_success",
+        "navigates_to_step_slug": "S15_success"
+      }
+    },
+    {
+      "screen_id": "screen_partner_banner",
+      "step_slugs": [
+        "S2_partner_banner_entry"
+      ],
+      "mermaid_node_ids": [
+        "C0"
+      ],
+      "screen_type": "info",
+      "title": "Спеціальна пропозиція",
+      "subtitle": "",
+      "functional_description": "Користувач бачить партнерський банер з пропозицією оренди авто за спеціальними умовами. Може перейти до вибору авто.",
+      "sections": [
+        {
+          "type": "other",
+          "title": "",
+          "description": "Партнерський банер з умовами.",
+          "components": [
+            {
+              "component_slug": "promo_banner",
+              "label": "Орендувати авто зі знижкою",
+              "placeholder": "",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Детальніше",
+                  "navigates_to_screen_id": "screen_partner_car_catalog",
+                  "navigates_to_step_slug": "S5_quick_select_car"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Детальніше",
+        "navigates_to_screen_id": "screen_partner_car_catalog",
+        "navigates_to_step_slug": "S5_quick_select_car"
+      }
+    },
+    {
+      "screen_id": "screen_partner_car_catalog",
+      "step_slugs": [
+        "S5_quick_select_car"
+      ],
+      "mermaid_node_ids": [
+        "C1"
+      ],
+      "screen_type": "list",
+      "title": "Оберіть авто (партнер)",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає перелік авто, доступних за спеціальними умовами партнерської пропозиції, та обирає авто.",
+      "sections": [
+        {
+          "type": "list",
+          "title": "Авто за спеціальною ціною",
+          "description": "Список авто для оренди за партнерською пропозицією.",
+          "components": [
+            {
+              "component_slug": "car_list",
+              "label": "Авто",
+              "placeholder": "Оберіть авто зі списку",
+              "role": "primary",
+              "repeats": "для кожного авто у списку",
+              "actions": [
+                {
+                  "label": "Детальніше",
+                  "navigates_to_screen_id": "screen_partner_car_details",
+                  "navigates_to_step_slug": "S8_view_details_partner"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "",
+        "navigates_to_screen_id": "",
+        "navigates_to_step_slug": ""
+      }
+    },
+    {
+      "screen_id": "screen_partner_car_details",
+      "step_slugs": [
+        "S8_view_details_partner"
+      ],
+      "mermaid_node_ids": [
+        "C2"
+      ],
+      "screen_type": "details",
+      "title": "Деталі авто (партнер)",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає деталі авто та умови партнерської пропозиції. Може перейти до оформлення оренди.",
+      "sections": [
+        {
+          "type": "details",
+          "title": "Інформація про авто",
+          "description": "Детальна інформація, фото, ціна, умови.",
+          "components": [
+            {
+              "component_slug": "car_card",
+              "label": "Деталі авто",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Орендувати",
+        "navigates_to_screen_id": "screen_identity_verification_partner",
+        "navigates_to_step_slug": "S11_confirm_identity_partner"
+      }
+    },
+    {
+      "screen_id": "screen_identity_verification_partner",
+      "step_slugs": [
+        "S11_confirm_identity_partner"
+      ],
+      "mermaid_node_ids": [
+        "C3"
+      ],
+      "screen_type": "form",
+      "title": "Підтвердження особи",
+      "subtitle": "",
+      "functional_description": "Користувач підтверджує особу через цифрові документи у Дія для оформлення оренди за партнерською пропозицією.",
+      "sections": [
+        {
+          "type": "form",
+          "title": "",
+          "description": "Підтвердіть особу для оформлення оренди.",
+          "components": [
+            {
+              "component_slug": "identity_verification",
+              "label": "Підтвердити через Дія",
+              "placeholder": "",
+              "role": "primary",
+              "actions": [
+                {
+                  "label": "Підтвердити",
+                  "navigates_to_screen_id": "screen_agreement_sign_partner",
+                  "navigates_to_step_slug": "S14_sign_agreement_partner"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підтвердити",
+        "navigates_to_screen_id": "screen_agreement_sign_partner",
+        "navigates_to_step_slug": "S14_sign_agreement_partner"
+      }
+    },
+    {
+      "screen_id": "screen_agreement_sign_partner",
+      "step_slugs": [
+        "S14_sign_agreement_partner"
+      ],
+      "mermaid_node_ids": [
+        "C4"
+      ],
+      "screen_type": "form",
+      "title": "Підписання договору",
+      "subtitle": "",
+      "functional_description": "Користувач переглядає договір оренди та підписує його через Дія.Підпис.",
+      "sections": [
+        {
+          "type": "summary",
+          "title": "Договір оренди",
+          "description": "Ознайомтесь з умовами та підпишіть договір.",
+          "components": [
+            {
+              "component_slug": "agreement_viewer",
+              "label": "Переглянути договір",
+              "placeholder": "",
+              "role": "informational"
+            }
+          ]
+        }
+      ],
+      "primary_action": {
+        "label": "Підписати",
+        "navigates_to_screen_id": "screen_rental_success",
+        "navigates_to_step_slug": "S15_success"
+      }
+    }
+  ],
+  "global_mermaid": "flowchart TD\n  subgraph Вкладка «Сервіси»\n    A0[Вхід через вкладку «Сервіси»]\n    A1[Вибір авто]\n    A2[Перегляд деталей авто]\n    A3[Підтвердження особи]\n    A4[Підписання договору]\n    A5[Успішна оренда]\n  end\n  A0 --> A1\n  A1 --> A2\n  A2 --> A3\n  A3 --> A4\n  A4 --> A5\n  subgraph Мапа сервісів\n    B0[Вхід через мапу сервісів]\n    B1[Перегляд авто на мапі]\n    B2[Деталі авто з мапи]\n    B3[Підтвердження особи (мапа)]\n    B4[Підписання договору (мапа)]\n    A5[Успішна оренда]\n  end\n  B0 --> B1\n  B1 --> B2\n  B2 --> B3\n  B3 --> B4\n  B4 --> A5\n  subgraph Партнерський банер у «Сервіси»\n    C0[Вхід через партнерський банер у «Сервіси»]\n    C1[Швидкий вибір авто (партнер)]\n    C2[Деталі авто з партнерської пропозиції]\n    C3[Підтвердження особи (партнер)]\n    C4[Підписання договору (партнер)]\n    A5[Успішна оренда]\n  end\n  C0 --> C1\n  C1 --> C2\n  C2 --> C3\n  C3 --> C4\n  C4 --> A5"
+}

@@ -1,129 +1,132 @@
-from flask import Flask, request
-from flask_cors import cross_origin
-# from dia import prompt_query
-
-application = Flask(__name__)
-
-from codemie_sdk import CodeMieClient
-from codemie_sdk.models.assistant import AssistantChatRequest
+import os
+import sys
+import logging
 import re
 
+from flask import Flask, request, jsonify
+from flask_cors import cross_origin
 
-def prompt_query(query: str):
+# Make sure Python can see yana.py which is in the project root
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
 
-    client = CodeMieClient(
-        auth_server_url="https://keycloak.eks-core.aws.main.edp.projects.epam.com/auth",
-        username="",
-        password="",
-        auth_client_id="codemie-sdk",
-        auth_realm_name="codemie-prod",
-        codemie_api_domain="https://codemie.lab.epam.com/code-assistant-api",
-    )
+from yana import (
+    run_yana_pipeline_with_screens,
+    get_db_connection,
+    semantic_search_context_for_brd,
+)
 
+application = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("yana_server")
 
-    # llm_models = client.llms.list()
-    # print(llm_models)
-
-    assistants = client.assistants.list(
-        minimal_response=True,  # Return minimal assistant info
-        scope="visible_to_user",  # or "created_by_user"
-        page=0,
-        per_page=12,
-        filters={"key": "value"}  # Optional filters
-    )
-
-    # print(assistants)
-
-
-    assistant = client.assistants.get("58998463-93a5-4c8e-a9dd-c02d4008a25d")
-    # print(assistant)
-
-
-    chat_request = AssistantChatRequest(
-        text=query,
-        stream=False,  # Set to True for streaming response
-        propagate_headers=True,  # Enable propagation of X-* headers to MCP servers
-    )
-    # Pass X-* headers to forward to MCP servers
-    response = client.assistants.chat(
-        "58998463-93a5-4c8e-a9dd-c02d4008a25d",
-        chat_request,
-        headers={
-            "X-Tenant-ID": "tenant-abc-123",
-            "X-User-ID": "user-456",
-            "X-Request-ID": "req-123",
-        },
-    )
-
-    print('response_json.generated')
-
-
-    def clean_llm_json_response(response_text):
-        """
-        Cleans an LLM response to extract a potential JSON string.
-        Removes common markdown formatting and extracts the content within curly braces.
-        """
-        # Remove markdown code block delimiters (```json, ```)
-        cleaned_text = response_text.replace('```json', '').replace('```', '').strip()
-
-        # Attempt to find the first occurrence of a JSON-like structure (starts and ends with curly braces)
-        # This regex is a simple heuristic and might need adjustment based on LLM output patterns.
-        match = re.search(r'\{.*\}', cleaned_text, re.DOTALL)
-        if match:
-            return match.group(0)
-        return cleaned_text
-
-    jsonresp = clean_llm_json_response(response.generated)
-
-    # print(jsonresp)
-
-    chathtml_request = AssistantChatRequest(
-        text=jsonresp,
-        stream=False,  # Set to True for streaming response
-        propagate_headers=True,  # Enable propagation of X-* headers to MCP servers
-    )
-    # Pass X-* headers to forward to MCP servers
-    response_html = client.assistants.chat(
-        "3d57d2b9-5a89-40fc-96da-cee486894f00",
-        chathtml_request,
-        headers={
-            "X-Tenant-ID": "tenant-abc-123",
-            "X-User-ID": "user-456",
-            "X-Request-ID": "req-123",
-        },
-    )
-
-    html_report = clean_llm_json_response(response_html.generated)
-
-    # print(html_report)
-    print(" HTML report generated")
-
-    # with open('extracted_data.csv', 'w') as file:
-    #         file.write(html_report)
-    #         print(f"File 'extracted_data.csv' overwritten successfully.")
-
-    parts = [s[7:] for s in html_report.split("~~~\n\n")]
-    parts[-1] = parts[-1][:-3]
-    parts = "\n\n".join(parts)
-    print(parts)
-    return parts
-
-@application.route("/")
-def hello_world():
-    return "Welcome"
 
 @application.route("/status")
 def status():
     return "OK"
 
-@application.route("/api/search")
+VECTOR_LINE_RE = re.compile(
+    r'^\[(?P<kind>[A-Z]+)\s+(?P<code>[^:\]]+):(?P<name>[^\]]+)\]\s+'
+    r'\(similarity=(?P<sim>[\d.]+)\)\s+::\s+(?P<content>.*)$'
+)
+def parse_vector_context(raw: str):
+    """
+    Parse the compact text returned by semantic_search_context_for_brd()
+    into structured hits for the UI.
+    """
+    hits = []
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        m = VECTOR_LINE_RE.match(line)
+        if not m:
+            continue
+        hits.append(
+            {
+                "source_type": m.group("kind"),   # DOC / FLOW / STEP / COMP
+                "code": m.group("code"),
+                "name": m.group("name"),
+                "similarity": float(m.group("sim")),
+                "content": m.group("content"),
+            }
+        )
+    return hits
+
+
+@application.route("/api/search", methods=["GET", "POST"])
 @cross_origin()
 def search():
-    name = request.args.get('query', '112')
-    if name=='112': return "Default response for query null."
+    """
+    HTTP API to run the Yana pipeline.
 
-    result = prompt_query(name)
-    return str(result)
-        
-if __name__ == '__main__':
-    application.run(host='0.0.0.0', port=8000)
+    Accepts:
+    - GET  /api/search?query=...
+    - GET  /api/search?brd=...
+    - POST /api/search with JSON: { "brd": "..." } or { "query": "..." }
+
+    Returns:
+    - JSON object with keys:
+      { service, ui_graph, screen_flows, screens, global_mermaid }
+    """
+    if request.method == "POST":
+        payload = request.get_json(silent=True) or {}
+        brd = (payload.get("brd") or payload.get("query") or "").strip()
+    else:
+        brd = (
+            request.args.get("brd")
+            or request.args.get("query")
+            or ""
+        ).strip()
+
+    logger.info(f"Received search request with BRD: '{brd[:50]}...'")
+
+    if not brd:
+        logger.warning("Empty BRD received.")
+        return jsonify({"error": "Empty BRD"}), 400
+
+    try:
+        logger.info("Executing Yana pipeline...")
+        bundle, normalized_bundle, evaluation, final = run_yana_pipeline_with_screens(brd)
+        logger.info("Yana pipeline executed successfully.")
+    except Exception as exc:
+        logger.error(f"Error in Yana pipeline: {exc}", exc_info=True)
+        return jsonify({"error": str(exc)}), 500
+    
+        # Build vector similarity evidence for the UI (cosine sim numbers)
+    conn = get_db_connection()
+    raw_vector_ctx = semantic_search_context_for_brd(conn, brd_text=brd, top_k=30)
+    vector_hits = parse_vector_context(raw_vector_ctx)
+
+    # Build richer payload combining all agents
+    response = {
+        # Agent 4 (screen spec) – what you already used
+        **final,  # { service, ui_graph, screen_flows, screens, global_mermaid }
+
+        # Agent 3 – evaluation of flows
+        "evaluation": evaluation,
+
+        # Embedding/evidence info used during normalization
+        "retrieval": {
+            "vector_context_raw": raw_vector_ctx,
+            "vector_hits": vector_hits,
+        },
+
+        # Debug visibility for earlier agents
+        "debug": {
+            "agent1_bundle": bundle,
+            "agent2_normalized": normalized_bundle,
+        },
+    }
+
+    logger.info("Returning successful response with evaluation and retrieval metadata.")
+    return jsonify(response)
+
+
+
+
+
+if __name__ == "__main__":
+    # Run backend locally on port 8000
+    application.run(host="0.0.0.0", port=8000, debug=True)
