@@ -5,6 +5,8 @@
 
 update 24.11.25 - v2 -  https://github.com/010io/Yana.Diia_v3, https://yana-diia-v3.vercel.app/
 
+update 30.11.25 - v1 new - http://ec2-63-176-139-155.eu-central-1.compute.amazonaws.com/v1
+
 # Запуск в середовищі розробки
 ## Сервер
 1. ```cmd
