@@ -349,7 +349,7 @@ export default function Home() {
       
 
       {/* Main content */}
-      <div className="mx-auto max-w-6xl px-4 mt-6 mb-10 space-y-6">
+      <div className="mx-auto max-w-full px-4 mt-6 mb-10 space-y-6 ">
         {!yanaResult && (
           <div className="text-sm text-slate-600">
             Воркфлоу не згенеровано. Вставте BRD вище і натисніть{' '}
