@@ -151,9 +151,9 @@ export default function Home() {
             onClick={openInConstructor}
             disabled={responseStatus === 'sent' || !responseMessage}
             type="button"
-            title="Відкрити в кострукторі"
+            title="Відкрити в конструкторі"
           >
-            <span className="text-sm">Відкрити в кострукторі</span>
+            <span className="text-sm">Відкрити в конструкторі</span>
           </button>
         </div>
         </>
