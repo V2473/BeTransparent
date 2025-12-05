@@ -4,6 +4,7 @@ import math
 import sqlite3
 from typing import List, Optional, Literal, Tuple, Dict, Any
 
+from functools import lru_cache
 import logging
 from openai import OpenAI
 
@@ -12,8 +13,8 @@ from openai import OpenAI
 # CONFIG
 # ==========================
 
-OPENAI_MODEL_WORKFLOW = "gpt-4.1"
-OPENAI_MODEL_EVAL = "gpt-4.1-mini"
+OPENAI_MODEL_WORKFLOW = "gpt-5.1"
+OPENAI_MODEL_EVAL = "gpt-5.1"
 OPENAI_MODEL_EMBED = "text-embedding-3-small"
 DB_PATH = "diia_ai.db"
 
@@ -25,7 +26,18 @@ logging.basicConfig(
 
 logger = logging.getLogger("yana_pipeline")
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+@lru_cache(maxsize=1)
+def get_openai_client() -> OpenAI:
+    """
+    Lazily initialize the OpenAI client so imports don't explode when the key
+    isn't configured. Callers still need OPENAI_API_KEY set before use.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "OPENAI_API_KEY is not set. Please export it before running the Yana pipeline."
+        )
+    return OpenAI(api_key=api_key)
 
 
 
@@ -359,7 +371,7 @@ Task:
 
 def embed_text(text: str) -> List[float]:
     text = text.replace("\n", " ")
-    resp = client.embeddings.create(
+    resp = get_openai_client().embeddings.create(
         model=OPENAI_MODEL_EMBED,
         input=text,
     )
@@ -732,7 +744,7 @@ def call_structured(
     """
     logger.info("Calling model=%s for structured JSON", model)
 
-    resp = client.chat.completions.create(
+    resp = get_openai_client().chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -967,6 +979,7 @@ def build_ui_graph(normalized_bundle: Dict[str, Any]) -> Dict[str, Any]:
         # --- merge all Mermaid subgraphs into one global diagram ---
     subgraph_blocks: List[str] = []
     for fm in flows_mermaid:
+        logger.info(f"[DEBUG] item in flows_mermaid: type={type(fm)}, value='{str(fm)[:100]}...'")
         diag = fm.get("mermaid_diagram") or ""
         if not diag:
             continue
@@ -1150,4 +1163,3 @@ if __name__ == "__main__":
         f.write(json.dumps(screen_json, indent=2, ensure_ascii=False))
 
     print(f"\n[INFO] Agent 4 output saved to {output_path}")
-
